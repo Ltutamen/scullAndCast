@@ -1,0 +1,6 @@
+.bsp/
+.idea/
+assets/store
+project/project
+project/target
+target/
