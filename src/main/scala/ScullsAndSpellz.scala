@@ -1,9 +1,10 @@
 import indigo.*
+import model._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object HelloIndigo extends IndigoSandbox[Unit, Model] {
+object ScullsAndSpellz extends IndigoSandbox[Unit, Model] {
 
   private val magnification = 3
   private val scullAssetName = AssetName("scull")
@@ -48,7 +49,6 @@ object HelloIndigo extends IndigoSandbox[Unit, Model] {
                  ): GlobalEvent => Outcome[Model] = {
     case MouseEvent.Click(clickPoint) =>
       val adjustedPosition = clickPoint - model.center
-
       Outcome(
         model.addDot(
           Scull(
@@ -66,6 +66,9 @@ object HelloIndigo extends IndigoSandbox[Unit, Model] {
     case FrameTick =>
       Outcome(model.update(context.delta))
 
+    case  KeyboardEvent.KeyDown(keyCode) =>
+      Outcome(ModelUpdater.onKeyDown(model, keyCode))
+
     case _ =>
       Outcome(model)
   }
@@ -76,8 +79,10 @@ object HelloIndigo extends IndigoSandbox[Unit, Model] {
              ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(wizzardAssetName)) ::
-          drawSculls(model.center, model.dots)
+        Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(wizzardAssetName))
+          .moveTo(model.wizzard.position)
+          ::
+          drawSculls(model.center, model.sculls)
       )
     )
 
@@ -94,19 +99,4 @@ object HelloIndigo extends IndigoSandbox[Unit, Model] {
     }
 }
 
-final case class Model(center: Point, dots: Batch[Scull]) {
-  def addDot(dot: Scull): Model =
-    this.copy(dots = dot :: dots)
 
-  def update(timeDelta: Seconds): Model =
-    this.copy(dots = dots.map(_.update(timeDelta)))
-}
-
-object Model {
-  def initial(center: Point): Model = Model(center, Batch.empty)
-}
-
-final case class Scull(orbitDistance: Int, angle: Radians) {
-  def update(timeDelta: Seconds): Scull =
-    this.copy(angle = angle + Radians.fromSeconds(timeDelta))
-}
