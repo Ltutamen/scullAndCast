@@ -7,7 +7,7 @@ package model {
   import model.*
   import model.entity.Spell
 
-  object ModelUpdater:
+  object ModelService:
 
     def onKeyDown(model: Model, keyPress: Key): Model =
       keyPress match
