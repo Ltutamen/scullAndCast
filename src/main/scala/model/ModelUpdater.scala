@@ -38,9 +38,9 @@ package model {
     def castSpell(model: Model, clickPoint: Point): Model =
 
       val directionPoint = clickPoint - model.wizzard.position
-      val direction: Vector2 = Vector2(directionPoint.x, directionPoint.y).normalise
+      val direction: Vector2 = Vector2(directionPoint.x, directionPoint.y)
 
       val spellCastPosition = Wizzard.getCenter(model)
 
-      model.addSpell(Spell.create(model.wizzard.position, direction))
+      model.addSpell(Spell.create(spellCastPosition, direction))
 }
