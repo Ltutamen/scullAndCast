@@ -1,27 +1,26 @@
 package model {
 
   import indigo.shared.constants.Key
+  import indigo.shared.dice.Dice
   import indigo.{Batch, Point, Radians, Seconds}
+  import model.entity.Spell
 
-  final case class Model(center: Point, sculls: Batch[Scull], wizzard: Wizzard) {
-    def addDot(dot: Scull): Model =
-      this.copy(sculls = dot :: sculls)
+  final case class Model(dice: Dice, center: Point, sculls: Batch[Scull], wizzard: Wizzard, spells: Batch[Spell]) {
+    def addScull(scull: Scull): Model =
+      this.copy(sculls = scull :: sculls)
+
+    def addSpell(spell: Spell): Model =
+      this.copy(spells = spell :: spells)
 
     def update(timeDelta: Seconds): Model =
-      this.copy(sculls = sculls.map(_.update(timeDelta)))
+      spells.map(_.update(timeDelta))
+
+      this.copy(
+        sculls = sculls.map(_.update(timeDelta)))
+
   }
 
   object Model {
-    def initial(center: Point): Model = Model(center, Batch.empty, Wizzard())
-  }
-
-  final case class Scull(orbitDistance: Int, angle: Radians) {
-    def update(timeDelta: Seconds): Scull =
-      this.copy(angle = angle + Radians.fromSeconds(timeDelta))
-  }
-
-  final case class Wizzard(position: Point = Point(5, 7)) {
-    
-
+    def initial(dice: Dice, center: Point): Model = Model(dice, center, Batch.empty, Wizzard(aim = center), Batch.empty)
   }
 }
